@@ -7,14 +7,14 @@ form.form-signin
     placeholder = 'Email address',
     required    = '',
     autofocus   = '',
-    v-model     = "mEmail"
+    v-model     = "form.email"
   )
   label.sr-only(for='inputPassword') Password
   input#inputPassword.form-control(
     type        = 'password',
     placeholder = 'Password',
     required    = '',
-    v-model     = "mPassword"
+    v-model     = "form.password"
   )
   .checkbox
     label
@@ -23,23 +23,37 @@ form.form-signin
   button.btn.btn-lg.btn-primary.btn-block(
     type = 'submit'
     @click = "onSubmit"
+    :disabled = "!isValid"
   ) Sign in
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 
+type TForm = {
+  email: string;
+  password: string;
+};
+
 export default Vue.extend({
   name: 'sign-in',
   data: function() {
     return {
-      mEmail: "",
-      mPassword: ""
+      form:{
+        email: "",
+        password: ""
+      } as TForm
     };
+  },
+  computed: {
+    isValid: function() {
+      const form = this.form as TForm;
+      return ((form.password.length > 0) && (form.password.length > 0));
+    }
   },
   methods: {
     onSubmit: function() {
-      alert(`email: ${this.mEmail}\npassword: ${this.mPassword}`);
+      alert(`email: ${this.form.email}\npassword: ${this.form.password}`);
     }
   }
 });
