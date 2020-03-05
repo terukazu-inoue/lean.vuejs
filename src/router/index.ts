@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import VueCompositionApi from '@vue/composition-api';
 import Home from '../views/Home.vue'
 
 Vue.use(VueRouter)
+Vue.use(VueCompositionApi);
 
 const routes = [
   {
