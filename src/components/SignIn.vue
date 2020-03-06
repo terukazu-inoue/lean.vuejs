@@ -48,7 +48,7 @@ export default Vue.extend({
   computed: {
     isValid: function() {
       const form = this.form as TForm;
-      return ((form.password.length > 0) && (form.password.length > 0));
+      return ((form.email.length > 0) && (form.password.length > 0));
     }
   },
   methods: {
