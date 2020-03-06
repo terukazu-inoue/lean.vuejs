@@ -7,14 +7,14 @@ form.form-signin
     placeholder = 'Email address',
     required    = '',
     autofocus   = '',
-    v-model     = "email"
+    v-model     = "form.email"
   )
   label.sr-only(for='inputPassword2') Password
   input#inputPassword2.form-control(
     type        = 'password',
     placeholder = 'Password',
     required    = '',
-    v-model     = "password"
+    v-model     = "form.password"
   )
   .checkbox
     label
@@ -28,22 +28,95 @@ form.form-signin
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from "@vue/composition-api";
+import { defineComponent, computed, reactive, watch } from "@vue/composition-api";
+
+const form = reactive({
+  email: "",
+  password: ""
+});
+
+const onSubmit = (e: Event) => {
+  alert(`email: ${form.email}\npassword: ${form.password}`);
+}
+
+const isValid = computed(()=>{
+  return ((form.email.length > 0) && (form.password.length > 0));
+});
+
+// -> use setup()
+// function onBeforeCreate(){
+//   console.log("onBeforeCreate()");
+// }
+
+// -> use setup()
+// function onCreated(){
+//   console.log("onCreated()");
+// }
+
+function onBeforeMount(){
+  console.log("onBeforeMount()");
+}
+
+function onMounted(){
+  console.log("onMounted()");
+}
+
+function onBeforeUpdate(){
+  console.log("onBeforeUpdate()");
+}
+
+function onUpdated(){
+  console.log("onUpdated()");
+}
+
+function onBeforeDestroy(){
+  console.log("onBeforeDestroy()");
+}
+
+function onDestroyed(){
+  console.log("onDestroyed()");
+}
+
+function onRenderTracked(e: Event){
+  console.log("onRenderTracked()");
+}
+
+function onRenderTriggered(e: Event){
+  console.log("onRenderTriggered()");
+}
+
+type Props = {
+  emailInitial?: string;
+  passwordInitial?: string;
+};
 
 export default defineComponent({
-  setup() {
-    const email = ref("");
-    const password = ref("");
-
-    const onSubmit = (e: Event) => {
-      alert(`email: ${email.value}\npassword: ${email.value}`);
-    }
-
-    const isValid = computed(()=>{
-      return ((email.value.length > 0) && (password.value.length > 0));
-    });
-
-    return { email, password, onSubmit, isValid };
-  }
+  props: {
+    emailInitial: String,
+    passwordInitial: String
+  },
+  setup(props: Props) {
+    console.log("setup()");
+    form.email = props.emailInitial ?? "";
+    form.password = props.passwordInitial ?? "";
+   return { form, onSubmit, isValid };
+  },
+  // beforeCreate: onBeforeCreate,  // -> use setup()
+  // created:      onCreated,       // -> use setup()
+  beforeMount:  onBeforeMount,
+  mounted:      onMounted,
+  beforeUpdate: onBeforeUpdate,
+  updated:      onUpdated,
+  beforeDestroy:onBeforeDestroy,
+  destroyed:    onDestroyed,
 });
+
+watch(()=> form.email, (curr, prev)=>{
+  console.log(`watch(email): "${prev}" -> "${curr}"`);
+});
+
+watch(()=> form.password, (curr, prev)=>{
+  console.log(`watch(password): "${prev}" -> "${curr}"`);
+});
+
 </script>

@@ -2,9 +2,9 @@
   div
     app-navigation
     .container
-      sign-in
+      SignIn
     .container
-      sign-in-2
+      SignIn2(emailInitial="foo@foo.com")
 </template>
 
 <script lang="ts">
@@ -21,7 +21,7 @@ export default Vue.extend({
   components:{
     AppNavigation,
     SignIn,
-    "sign-in-2": SignIn2
+    SignIn2
   }
 });
 </script>
