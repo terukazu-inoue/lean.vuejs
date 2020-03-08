@@ -30,6 +30,7 @@
     "jquery": "^3.4.1",
     "pug": "^2.0.4",
     "pug-plain-loader": "^1.0.0",
+    "rxjs": "^6.5.4",
     "typescript": "~3.7.5",
     "vue-template-compiler": "^2.6.11"
   }

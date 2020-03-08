@@ -18,7 +18,10 @@ form.form-signin
   )
   .checkbox
     label
-      input(type='checkbox', value='remember-me')
+      input(
+        type    = 'checkbox',
+        v-model = "form.bRememberMe"
+      )
       |  Remember me
   button.btn.btn-lg.btn-primary.btn-block(
     type = 'submit'
@@ -29,29 +32,26 @@ form.form-signin
 
 <script lang="ts">
 import { defineComponent, computed, reactive, watch } from "@vue/composition-api";
+import { GlobalObservables } from "@/code/GlobalObservables";
+import { Subscription } from "rxjs";
+import { map, take } from "rxjs/operators";
 
 const form = reactive({
   email: "",
-  password: ""
+  password: "",
+  bRememberMe: false
 });
 
-const onSubmit = (e: Event) => {
+let subscription: Subscription | undefined = undefined;
+
+
+const onSubmit = () => {
   alert(`email: ${form.email}\npassword: ${form.password}`);
 }
 
 const isValid = computed(()=>{
   return ((form.email.length > 0) && (form.password.length > 0));
 });
-
-// -> use setup()
-// function onBeforeCreate(){
-//   console.log("onBeforeCreate()");
-// }
-
-// -> use setup()
-// function onCreated(){
-//   console.log("onCreated()");
-// }
 
 function onBeforeMount(){
   console.log("onBeforeMount()");
@@ -75,14 +75,7 @@ function onBeforeDestroy(){
 
 function onDestroyed(){
   console.log("onDestroyed()");
-}
-
-function onRenderTracked(e: Event){
-  console.log("onRenderTracked()");
-}
-
-function onRenderTriggered(e: Event){
-  console.log("onRenderTriggered()");
+  subscription?.unsubscribe();
 }
 
 type Props = {
@@ -99,24 +92,25 @@ export default defineComponent({
     console.log("setup()");
     form.email = props.emailInitial ?? "";
     form.password = props.passwordInitial ?? "";
-   return { form, onSubmit, isValid };
+    subscription = GlobalObservables.Instance.oRemenberMe()
+    .pipe(map((b)=>{
+      form.bRememberMe = b;
+      return void 0;
+    }))
+    .subscribe();
+    return { form, onSubmit, isValid };
   },
-  // beforeCreate: onBeforeCreate,  // -> use setup()
-  // created:      onCreated,       // -> use setup()
   beforeMount:  onBeforeMount,
   mounted:      onMounted,
   beforeUpdate: onBeforeUpdate,
   updated:      onUpdated,
   beforeDestroy:onBeforeDestroy,
-  destroyed:    onDestroyed,
+  destroyed:    onDestroyed
 });
 
-watch(()=> form.email, (curr, prev)=>{
-  console.log(`watch(email): "${prev}" -> "${curr}"`);
-});
-
-watch(()=> form.password, (curr, prev)=>{
-  console.log(`watch(password): "${prev}" -> "${curr}"`);
+watch(()=> form.bRememberMe, (curr, prev)=>{
+  console.log(`watch(form.bRememberme): "${prev}" -> "${curr}"`);
+  GlobalObservables.Instance.setRememberMe(curr);
 });
 
 </script>

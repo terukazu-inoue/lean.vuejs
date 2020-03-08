@@ -18,7 +18,10 @@ form.form-signin
   )
   .checkbox
     label
-      input(type='checkbox', value='remember-me')
+      input(
+        type    ='checkbox',
+        v-model ='form.bRememberMe'
+      )
       |  Remember me
   button.btn.btn-lg.btn-primary.btn-block(
     type = 'submit'
@@ -29,10 +32,14 @@ form.form-signin
 
 <script lang="ts">
 import Vue from "vue";
+import { GlobalObservables } from "@/code/GlobalObservables";
+import { Subscription } from "rxjs";
+import { map, take } from "rxjs/operators";
 
 type TForm = {
   email: string;
   password: string;
+  bRememberMe: boolean;
 };
 
 export default Vue.extend({
@@ -41,8 +48,10 @@ export default Vue.extend({
     return {
       form:{
         email: "",
-        password: ""
-      } as TForm
+        password: "",
+        bRememberMe: false
+      } as TForm,
+      subscription: {}
     };
   },
   computed: {
@@ -54,6 +63,25 @@ export default Vue.extend({
   methods: {
     onSubmit: function() {
       alert(`email: ${this.form.email}\npassword: ${this.form.password}`);
+    }
+  },
+  created: function(){
+    this.subscription = GlobalObservables.Instance.oRemenberMe()
+    .pipe(map((b)=>{
+      this.form.bRememberMe = b;
+      return void 0;
+    }))
+    .subscribe();
+  },
+  destroyed: function() {
+    if(this.subscription instanceof Subscription){
+      this.subscription.unsubscribe();
+    }
+    this.subscription = {};
+  },
+  watch:{
+    "form.bRememberMe": function(val: boolean){
+      GlobalObservables.Instance.setRememberMe(val);
     }
   }
 });
